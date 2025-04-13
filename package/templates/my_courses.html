@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Enrolled Courses</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>My Enrolled Courses</h2>
+    <ul>
+        {% for course in courses %}
+            <li>
+                <strong>{{ course.title }}</strong><br>
+                {{ course.description }}<br>
+                Instructor: {{ course.instructor.full_name }}
+                <hr>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
