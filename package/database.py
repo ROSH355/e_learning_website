@@ -8,9 +8,9 @@ pymysql.install_as_MySQLdb()
 
 
 app = Flask(__name__)
-
+app.secret_key = 'supersecretkey123'
 # Configure MySQL database (adjust according to your setup)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost/e_learning'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Jo36%40220705@localhost/e_learning'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -39,13 +39,15 @@ class Enrollment(db.Model):
     enrollment_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.course_id'), nullable=False)
-    enrolled_on = db.Column(db.TIMESTAMP, server_default=func.now())
+    enrolled_at = db.Column(db.TIMESTAMP, server_default=func.now())
     user = db.relationship('User', backref='enrollments')
     course = db.relationship('Course', backref='enrollments')
 
 
 
-@app.route('/login.html', methods=['GET', 'POST'])
+from flask import session
+
+@app.route('/signup', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         full_name = request.form['username']
@@ -53,19 +55,49 @@ def register():
         password = request.form['password']
         role = request.form['role']
 
-        # Hash the password
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return "User already exists. Please log in.", 400
+
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-        # Create a new user instance
         new_user = User(full_name=full_name, email=email, password_hash=hashed_password, role=role)
-
-        # Add to database
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect('/success')
+        session['user_id'] = new_user.user_id
+        # in both register() and login()
+        session['role'] = new_user.role.lower()
+
+
+        return redirect('/courses')
+
+    return render_template('signup.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
+            session['user_id'] = user.user_id
+            # in both register() and login()
+            session['role'] = user.role.lower()
+            print("Session role after login:", session['role'])
+
+            return redirect('/courses')
+        else:
+            return "Invalid credentials", 401
 
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
 
 @app.route('/success')
 def success():

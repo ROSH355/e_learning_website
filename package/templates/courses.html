@@ -22,8 +22,7 @@
           <div class="course-title">{{ course.title }}</div>
           <div class="course-desc">{{ course.description }}</div>
           <div class="instructor-name">Instructor: {{ course.instructor.full_name }}</div>
-
-          {% if session['role'] == 'Student' %}
+          {% if session['role'] == 'student' %}
             <a href="/enroll/{{ course.course_id }}" class="cta-button">Enroll</a>
           {% endif %}
         </div>

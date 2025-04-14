@@ -128,3 +128,33 @@ footer {
   font-size: 0.9rem;
   color: #777;
 }
+/* Add this to your style.css */
+
+/* Button styling */
+.cta-button {
+  background-color: #4CAF50; /* Green background */
+  color: white;              /* White text */
+  padding: 10px 20px;        /* Padding around the text */
+  text-align: center;        /* Center the text inside the button */
+  border-radius: 5px;        /* Rounded corners */
+  text-decoration: none;     /* Remove underline */
+  display: inline-block;     /* Ensures it behaves like a block element */
+  font-size: 16px;           /* Font size */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Change background color when hovering */
+.cta-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* Aligning the button to the right */
+.course-card {
+  position: relative; /* Needed for absolute positioning of the button */
+}
+
+.cta-button {
+  position: absolute; /* Absolute positioning relative to .course-card */
+  bottom: 10px;       /* Distance from the bottom of the card */
+  right: 10px;        /* Distance from the right side of the card */
+}
